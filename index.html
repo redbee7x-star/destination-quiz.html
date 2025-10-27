@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Your Next Dream Destination ✈️</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      color: #222;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: #1d3557;
+    }
+    .question {
+      margin: 20px 0;
+      font-size: 1.1rem;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      background: #f1faee;
+      border: 2px solid #a8dadc;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .options button:hover {
+      background: #a8dadc;
+      color: #1d3557;
+    }
+    #next-btn {
+      background: #457b9d;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: none;
+    }
+    #next-btn:hover {
+      background: #1d3557;
+    }
+    .result {
+      display: none;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      color: #1d3557;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>🌴 Not Sure Where to Go Next?</h1>
+    <p>Let your <strong>taste, mood</strong>, or <strong>spirit animal</strong> decide!</p>
+    <div id="quiz">
+      <div id="question" class="question"></div>
+      <div class="options" id="options"></div>
+      <button id="next-btn">Next →</button>
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What’s your ideal breakfast?",
+        options: [
+          { text: "Fresh croissant & coffee", type: "europe" },
+          { text: "Tropical fruit bowl", type: "beach" },
+          { text: "Spicy street noodles", type: "asia" },
+          { text: "Pancakes with maple syrup", type: "nature" }
+        ]
+      },
+      {
+        question: "Choose your travel soundtrack:",
+        options: [
+          { text: "Soft jazz & café vibes", type: "europe" },
+          { text: "Reggae & waves", type: "beach" },
+          { text: "K-pop & city buzz", type: "asia" },
+          { text: "Indie folk under the stars", type: "nature" }
+        ]
+      },
+      {
+        question: "Pick your spirit animal:",
+        options: [
+          { text: "Cat — cozy and curious", type: "europe" },
+          { text: "Dolphin — playful & free", type: "beach" },
+          { text: "Tiger — bold & adventurous", type: "asia" },
+          { text: "Wolf — loves peace & nature", type: "nature" }
+        ]
+      },
+      {
+        question: "What scenery calms you the most?",
+        options: [
+          { text: "Rivers & castles", type: "europe" },
+          { text: "Palm beaches", type: "beach" },
+          { text: "Neon skyline", type: "asia" },
+          { text: "Mountains & forests", type: "nature" }
+        ]
+      },
+      {
+        question: "What’s your dream dinner spot?",
+        options: [
+          { text: "Paris rooftop at sunset", type: "europe" },
+          { text: "Beach shack under lanterns", type: "beach" },
+          { text: "Tokyo ramen bar", type: "asia" },
+          { text: "Cabin by the lake", type: "nature" }
+        ]
+      }
+    ];
+
+    const results = {
+      europe: "🍷 You belong in charming **Europe** — stroll through Paris, Rome, or Prague.",
+      beach: "🌴 Your soul craves **tropical beaches** — think Bali, Maldives, or Hawaii.",
+      asia: "🍜 You’re all about **vibrant Asia** — explore Tokyo, Bangkok, or Seoul!",
+      nature: "🏞️ You’re a **nature lover** — head to New Zealand, Canada, or Norway."
+    };
+
+    let currentQuestion = 0;
+    const answers = { europe: 0, beach: 0, asia: 0, nature: 0 };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const resultEl = document.getElementById("result");
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt.text;
+        btn.onclick = () => {
+          answers[opt.type]++;
+          nextBtn.style.display = "block";
+        };
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      nextBtn.style.display = "none";
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      questionEl.style.display = "none";
+      optionsEl.style.display = "none";
+      nextBtn.style.display = "none";
+
+      let topType = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b);
+      resultEl.style.display = "block";
+      resultEl.innerHTML = results[topType];
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
