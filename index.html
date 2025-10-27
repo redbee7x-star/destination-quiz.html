@@ -3,105 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Where in the World? Quiz</title>
+<title>Where in the World? Travel Quiz</title>
 <style>
   body {
-    font-family: 'Poppins', sans-serif;
-    color: #fff;
-    background: #000;
-    text-align: center;
+    font-family: "Poppins", sans-serif;
+    background: #f7f7f7;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    text-align: center;
+    color: #333;
   }
-  .bg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.45);
-    z-index: -1;
-    transition: background-image 1s ease-in-out;
-  }
+
   .quiz-container {
     max-width: 600px;
-    margin: 60px auto;
-    background: rgba(0,0,0,0.45);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   }
-  .qnum {
-    font-size: 22px;
-    opacity: 0.8;
-    margin-bottom: 5px;
-  }
-  .qimage {
+
+  #qImage {
     width: 100%;
-    height: 250px;
+    max-height: 250px;
     object-fit: cover;
-    border-radius: 15px;
-    margin: 15px 0;
+    border-radius: 12px;
+    margin-bottom: 20px;
   }
-  .question {
-    font-size: 20px;
-    margin: 15px 0;
+
+  #qnum {
+    font-weight: 600;
+    color: #888;
   }
-  .answers button {
+
+  #questionText {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  #answers button {
     display: block;
     width: 100%;
-    margin: 10px 0;
     padding: 12px;
+    margin: 8px 0;
     border: none;
     border-radius: 10px;
-    background: #fff;
-    color: #333;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-  }
-  .answers button:hover {
-    background: #f3f3f3;
-    transform: scale(1.02);
-  }
-  .controls {
-    margin-top: 15px;
-  }
-  .btn {
-    background: #fff;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin: 5px;
-    font-size: 15px;
-  }
-  .ghost {
-    background: transparent;
-    border: 1px solid #fff;
+    background-color: #0077b6;
     color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
   }
+
+  #answers button:hover {
+    background-color: #0096c7;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    background: #023e8a;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid #023e8a;
+    color: #023e8a;
+  }
+
   .result-area {
     display: none;
+    text-align: center;
   }
-  h2 { font-size: 26px; margin-bottom: 10px; }
+
+  .result-area img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .result-area h2 {
+    color: #023e8a;
+  }
 </style>
 </head>
 <body>
 
-<div id="bg" class="bg"></div>
-
 <div class="quiz-container">
   <div class="question-area">
-    <div id="qnum" class="qnum"></div>
-    <img id="qImage" class="qimage" src="" alt="">
-    <div id="questionText" class="question"></div>
+    <div id="qnum"></div>
+    <img id="qImage" src="" alt="Question Image">
+    <div id="questionText"></div>
     <div id="answers" class="answers"></div>
   </div>
 
   <div id="resultArea" class="result-area">
+    <img id="resultImage" src="" alt="Result Image">
     <h2 id="resultTitle"></h2>
     <p id="resultDesc"></p>
     <button id="restartBtn" class="btn">Restart</button>
@@ -110,173 +119,163 @@
 </div>
 
 <script>
-  const quiz = [
-    { q: "What kind of weather makes you happiest?", a: [
-        {t:"beach", text:"Warm sunshine and sea breeze"},
-        {t:"art",  text:"Crisp air and artistic city corners"},
-        {t:"nature",text:"Cool mountain air"},
-        {t:"culture",text:"Mild weather perfect for walking museums"}
-      ] },
-    { q: "Your ideal morning on vacation:", a: [
-        {t:"nature", text:"Sunrise hike with coffee"},
-        {t:"beach",  text:"Breakfast by the water"},
-        {t:"culture", text:"Wandering a local market"},
-        {t:"art", text:"Espresso at a gallery café"}
-      ] },
-    { q: "Pick a travel soundtrack:", a: [
-        {t:"beach", text:"Gentle acoustic & waves"},
-        {t:"art",  text:"Indie jazz and piano"},
-        {t:"culture", text:"Traditional melodies"},
-        {t:"nature", text:"Ambient nature sounds"}
-      ] },
-    { q: "What’s the first thing you pack?", a: [
-        {t:"beach", text:"Swimwear & sunscreen"},
-        {t:"art", text:"Notebook and sketch pen"},
-        {t:"nature", text:"Hiking boots"},
-        {t:"culture", text:"Camera and a notebook"}
-      ] },
-    { q: "How do you like to spend an evening?", a: [
-        {t:"culture", text:"Watching a local performance"},
-        {t:"art", text:"Exploring galleries and small shows"},
-        {t:"beach", text:"Bonfire & stars"},
-        {t:"nature", text:"Stargazing by a quiet lake"}
-      ] },
-    { q: "Pick a perfect photo for your feed:", a: [
-        {t:"beach", text:"Turquoise water and palm trees"},
-        {t:"art", text:"Colourful street murals"},
-        {t:"culture", text:"Historic alley with lanterns"},
-        {t:"nature", text:"Foggy mountain ridge"}
-      ] },
-    { q: "Your favorite travel snack is:", a: [
-        {t:"culture", text:"Handmade pastry from a market"},
-        {t:"beach", text:"Fresh tropical fruit"},
-        {t:"art", text:"A specialty café dessert"},
-        {t:"nature", text:"Trail mix and hot cocoa"}
-      ] },
-    { q: "Pick your spirit animal for the trip:", a: [
-        {t:"beach", text:"Dolphin"},
-        {t:"nature", text:"Eagle"},
-        {t:"art", text:"Swan"},
-        {t:"culture", text:"Owl"}
-      ] },
-    { q: "What kind of souvenir do you bring home?", a: [
-        {t:"culture", text:"Local handmade craft"},
-        {t:"beach", text:"Seashell keepsake"},
-        {t:"art", text:"Limited-print poster or zine"},
-        {t:"nature", text:"Landscape photo book"}
-      ] },
-    { q: "Which scent makes you nostalgic while traveling?", a: [
-        {t:"art", text:"Coffee & paint studio scent"},
-        {t:"beach", text:"Salt air"},
-        {t:"culture", text:"Spices and incense"},
-        {t:"nature", text:"Pine and wet earth"}
-      ] },
-    { q: "Your favorite season is:", a: [
-        {t:"beach", text:"Summer"},
-        {t:"nature", text:"Spring"},
-        {t:"culture", text:"Autumn"},
-        {t:"art", text:"Winter (cozy galleries & cafes)"}
-      ] },
-  ];
+const quiz = [
+  { q: "What kind of weather makes you happiest?", a: [
+      {t:"beach", text:"Warm sunshine and sea breeze"},
+      {t:"art",  text:"Crisp air and artistic city corners"},
+      {t:"nature",text:"Cool mountain air"},
+      {t:"culture",text:"Mild weather perfect for walking museums"}
+  ]},
+  { q: "Your ideal morning on vacation:", a: [
+      {t:"nature", text:"Sunrise hike with coffee"},
+      {t:"beach",  text:"Breakfast by the water"},
+      {t:"culture", text:"Wandering a local market"},
+      {t:"art", text:"Espresso at a gallery café"}
+  ]},
+  { q: "Pick a travel soundtrack:", a: [
+      {t:"beach", text:"Gentle acoustic & waves"},
+      {t:"art",  text:"Indie jazz and piano"},
+      {t:"culture", text:"Traditional melodies"},
+      {t:"nature", text:"Ambient nature sounds"}
+  ]},
+  { q: "What’s the first thing you pack?", a: [
+      {t:"beach", text:"Swimwear & sunscreen"},
+      {t:"art", text:"Notebook and sketch pen"},
+      {t:"nature", text:"Hiking boots"},
+      {t:"culture", text:"Camera and a notebook"}
+  ]},
+  { q: "How do you like to spend an evening?", a: [
+      {t:"culture", text:"Watching a local performance"},
+      {t:"art", text:"Exploring galleries and small shows"},
+      {t:"beach", text:"Bonfire & stars"},
+      {t:"nature", text:"Stargazing by a quiet lake"}
+  ]},
+  { q: "Pick a perfect photo for your feed:", a: [
+      {t:"beach", text:"Turquoise water and palm trees"},
+      {t:"art", text:"Colourful street murals"},
+      {t:"culture", text:"Historic alley with lanterns"},
+      {t:"nature", text:"Foggy mountain ridge"}
+  ]},
+  { q: "Your favorite travel snack is:", a: [
+      {t:"culture", text:"Handmade pastry from a market"},
+      {t:"beach", text:"Fresh tropical fruit"},
+      {t:"art", text:"A specialty café dessert"},
+      {t:"nature", text:"Trail mix and hot cocoa"}
+  ]},
+  { q: "Pick your spirit animal for the trip:", a: [
+      {t:"beach", text:"Dolphin"},
+      {t:"nature", text:"Eagle"},
+      {t:"art", text:"Swan"},
+      {t:"culture", text:"Owl"}
+  ]},
+  { q: "What kind of souvenir do you bring home?", a: [
+      {t:"culture", text:"Local handmade craft"},
+      {t:"beach", text:"Seashell keepsake"},
+      {t:"art", text:"Limited-print poster or zine"},
+      {t:"nature", text:"Landscape photo book"}
+  ]},
+  { q: "Which scent makes you nostalgic while traveling?", a: [
+      {t:"art", text:"Coffee & paint studio scent"},
+      {t:"beach", text:"Salt air"},
+      {t:"culture", text:"Spices and incense"},
+      {t:"nature", text:"Pine and wet earth"}
+  ]},
+  { q: "Your favorite season is:", a: [
+      {t:"beach", text:"Summer"},
+      {t:"nature", text:"Spring"},
+      {t:"culture", text:"Autumn"},
+      {t:"art", text:"Winter (cozy galleries & cafes)"}
+  ]}
+];
 
-  let currentQuestion = 0;
-  const scores = { beach:0, art:0, culture:0, nature:0 };
+let currentQuestion = 0;
+const scores = { beach:0, art:0, culture:0, nature:0 };
 
-  const qnum = document.getElementById("qnum");
-  const questionText = document.getElementById("questionText");
-  const answersDiv = document.getElementById("answers");
-  const qImage = document.getElementById("qImage");
-  const bg = document.getElementById("bg");
-  const resultArea = document.getElementById("resultArea");
-  const resultTitle = document.getElementById("resultTitle");
-  const resultDesc = document.getElementById("resultDesc");
+const qnum = document.getElementById("qnum");
+const questionText = document.getElementById("questionText");
+const answersDiv = document.getElementById("answers");
+const qImage = document.getElementById("qImage");
+const resultArea = document.getElementById("resultArea");
+const resultImage = document.getElementById("resultImage");
+const resultTitle = document.getElementById("resultTitle");
+const resultDesc = document.getElementById("resultDesc");
 
-  const nextBtn = document.createElement("button");
-  nextBtn.className = "btn";
-  nextBtn.textContent = "Next";
-  const prevBtn = document.createElement("button");
-  prevBtn.className = "btn ghost";
-  prevBtn.textContent = "Previous";
+const nextBtn = document.createElement("button");
+nextBtn.className = "btn";
+nextBtn.textContent = "Next";
+const prevBtn = document.createElement("button");
+prevBtn.className = "btn ghost";
+prevBtn.textContent = "Previous";
 
-  const controlsDiv = document.createElement("div");
-  controlsDiv.className = "controls";
-  controlsDiv.append(prevBtn, nextBtn);
-  document.querySelector(".question-area").appendChild(controlsDiv);
+const controlsDiv = document.createElement("div");
+controlsDiv.className = "controls";
+controlsDiv.append(prevBtn, nextBtn);
+document.querySelector(".question-area").appendChild(controlsDiv);
 
-  function showQuestion() {
-    const q = quiz[currentQuestion];
-    qnum.textContent = `${currentQuestion + 1}.`;
-    questionText.textContent = q.q;
+function showQuestion() {
+  const q = quiz[currentQuestion];
+  qnum.textContent = `${currentQuestion + 1} / ${quiz.length}`;
+  questionText.textContent = q.q;
+  qImage.src = `images/${currentQuestion + 1}.jpg`;
 
-    // Load image for each question (1.jpg, 2.jpg, etc.)
-    const imgPath = `images/${currentQuestion + 1}.jpg`;
-    qImage.src = imgPath;
-    bg.style.backgroundImage = `url('${imgPath}')`;
+  answersDiv.innerHTML = "";
+  q.a.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt.text;
+    btn.onclick = () => selectAnswer(opt.t);
+    answersDiv.appendChild(btn);
+  });
 
-    answersDiv.innerHTML = "";
-    q.a.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.textContent = opt.text;
-      btn.onclick = () => selectAnswer(opt.t);
-      answersDiv.appendChild(btn);
-    });
+  prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
+}
 
-    prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
+function selectAnswer(type) {
+  scores[type]++;
+  if (currentQuestion < quiz.length - 1) {
+    currentQuestion++;
+    showQuestion();
+  } else {
+    showResult();
   }
+}
 
-  function selectAnswer(type) {
-    scores[type]++;
-    if (currentQuestion < quiz.length - 1) {
-      currentQuestion++;
-      showQuestion();
-    } else {
-      showResult();
-    }
+function showResult() {
+  const topType = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const results = {
+    beach: ["Tropical Soul", "You belong where waves meet the sky — carefree, sunny, and vibrant."],
+    art: ["Creative Wanderer", "Museums, murals, and melodies call your name — a traveler with imagination."],
+    culture: ["Curious Explorer", "You travel to connect with stories, traditions, and people."],
+    nature: ["Earth Seeker", "You find peace among mountains, forests, and open skies."]
+  };
+  const [title, desc] = results[topType];
+  resultImage.src = `images/${topType}.jpg`;
+
+  document.querySelector(".question-area").style.display = "none";
+  resultArea.style.display = "block";
+  resultTitle.textContent = title;
+  resultDesc.textContent = desc;
+}
+
+nextBtn.onclick = () => {
+  if (currentQuestion < quiz.length - 1) {
+    currentQuestion++;
+    showQuestion();
   }
-
-  function showResult() {
-    const topType = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-    const results = {
-      beach: ["Tropical Soul", "You belong where waves meet the sky — carefree, sunny, and vibrant."],
-      art: ["Creative Wanderer", "Museums, murals, and melodies call your name — a traveler with imagination."],
-      culture: ["Curious Explorer", "You travel to connect with stories, traditions, and people."],
-      nature: ["Earth Seeker", "You find peace among mountains, forests, and open skies."]
-    };
-    const [title, desc] = results[topType];
-
-    document.querySelector(".answers").style.display = "none";
-    qImage.style.display = "none";
-    qnum.style.display = "none";
-    questionText.style.display = "none";
-    controlsDiv.style.display = "none";
-
-    resultArea.style.display = "block";
-    resultTitle.textContent = title;
-    resultDesc.textContent = desc;
-    bg.style.backgroundImage = `url('images/${topType}.jpg')`;
+};
+prevBtn.onclick = () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    showQuestion();
   }
+};
 
-  nextBtn.onclick = () => {
-    if (currentQuestion < quiz.length - 1) {
-      currentQuestion++;
-      showQuestion();
-    }
-  };
+document.getElementById("restartBtn").onclick = () => location.reload();
+document.getElementById("shareBtn").onclick = () => {
+  navigator.clipboard.writeText(`${resultTitle.textContent} — ${resultDesc.textContent}`);
+  alert("Result copied to clipboard!");
+};
 
-  prevBtn.onclick = () => {
-    if (currentQuestion > 0) {
-      currentQuestion--;
-      showQuestion();
-    }
-  };
-
-  document.getElementById("restartBtn").onclick = () => location.reload();
-  document.getElementById("shareBtn").onclick = () => {
-    navigator.clipboard.writeText(`${resultTitle.textContent} — ${resultDesc.textContent}`);
-    alert("Result copied to clipboard!");
-  };
-
-  showQuestion();
+showQuestion();
 </script>
 </body>
 </html>
