@@ -242,10 +242,10 @@ function selectAnswer(type) {
 function showResult() {
   const topType = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
   const results = {
-    beach: ["Tropical Soul", "You belong where waves meet the sky — carefree, sunny, and vibrant."],
-    art: ["Creative Wanderer", "Museums, murals, and melodies call your name — a traveler with imagination."],
-    culture: ["Curious Explorer", "You travel to connect with stories, traditions, and people."],
-    nature: ["Earth Seeker", "You find peace among mountains, forests, and open skies."]
+    beach: ["Bali, Indonesia", "Golden beaches, lush temples, and warm smiles await you in Bali — your perfect tropical escape."],
+    art: ["Paris, France", "Where every corner inspires: stroll through art museums, sip coffee in hidden alleys, and let creativity flow."],
+    culture: ["Kyoto, Japan", "Step into ancient streets, serene shrines, and traditions that blend past and present in perfect harmony."],
+    nature: ["New Zealand", "For the soul that seeks vast horizons — snow peaks, green valleys, and adventure around every bend."]
   };
   const [title, desc] = results[topType];
   resultImage.src = `images/${topType}.jpg`;
