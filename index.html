@@ -66,7 +66,6 @@
         {t:"culture", text:"Autumn"},
         {t:"art", text:"Winter (cozy galleries & cafes)"}
       ] },
-    // add more questions here if you like
   ];
 
   let currentQuestion = 0;
@@ -97,8 +96,11 @@
     const q = quiz[currentQuestion];
     qnum.textContent = `${currentQuestion + 1}.`;
     questionText.textContent = q.q;
-    qImage.src = `images/${currentQuestion + 1}.jpg`;
-    bg.style.backgroundImage = `url('images/${currentQuestion + 1}.jpg')`;
+
+    // ✅ Automatically load each image based on question number
+    const imgPath = `images/${currentQuestion + 1}.jpg`;
+    qImage.src = imgPath;
+    bg.style.backgroundImage = `url('${imgPath}')`;
 
     answersDiv.innerHTML = "";
     q.a.forEach(opt => {
@@ -108,7 +110,7 @@
       answersDiv.appendChild(btn);
     });
 
-    // Hide Previous button on question 1
+    // Hide "Previous" button on first question
     prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
   }
 
@@ -141,6 +143,8 @@
     resultArea.style.display = "block";
     resultTitle.textContent = title;
     resultDesc.textContent = desc;
+
+    // ✅ Each result uses its themed background image
     bg.style.backgroundImage = `url('images/${topType}.jpg')`;
   }
 
