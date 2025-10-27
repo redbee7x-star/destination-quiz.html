@@ -28,7 +28,6 @@
       z-index:-1;
       transition:background-image .6s ease-in-out;
     }
-    /* center content */
     .wrap {
       min-height:100vh;
       display:flex;
@@ -87,6 +86,21 @@
       box-shadow:0 20px 40px rgba(12,24,40,0.08);
     }
     .answers button:active { transform:translateY(-1px) }
+    .qimage {
+      width:100%;
+      border-radius:10px;
+      overflow:hidden;
+      margin-bottom:14px;
+      background:#eaeaea;
+    }
+    .qimage img {
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      display:block;
+      border-radius:10px;
+      transition:opacity .4s ease-in-out;
+    }
     .result-area {
       display:none;
       padding:18px;
@@ -120,6 +134,7 @@
       .answers { grid-template-columns:1fr }
       .card { padding:18px }
       .question { font-size:16px }
+      .qimage img { height:200px; }
     }
   </style>
 </head>
@@ -137,6 +152,7 @@
       </header>
 
       <main class="question-area" aria-live="polite">
+        <div class="qimage"><img id="qImage" src="" alt="Question image"></div>
         <div class="qnum" id="qnum">1.</div>
         <div class="question" id="questionText">Loading question…</div>
 
@@ -221,128 +237,3 @@
           {t:"nature", text:"Spring"},
           {t:"culture", text:"Autumn"},
           {t:"art", text:"Winter (cozy galleries & cafes)"}
-        ] },
-      { q: "How do you prefer to move around?", a: [
-          {t:"art", text:"Bike between studios and cafés"},
-          {t:"beach", text:"Bike or scooter along the shore"},
-          {t:"nature", text:"Hiking or kayaking"},
-          {t:"culture", text:"Leisurely strolling and exploring"}
-        ] },
-      { q: "Pick one word to describe your perfect trip:", a: [
-          {t:"beach", text:"Relaxing"},
-          {t:"art", text:"Inspired"},
-          {t:"nature", text:"Peaceful"},
-          {t:"culture", text:"Enriching"}
-        ] },
-      { q: "When you daydream about traveling, what do you imagine most?", a: [
-          {t:"beach", text:"Turquoise water and swaying palms"},
-          {t:"nature", text:"Mountain air and wide views"},
-          {t:"art", text:"Vibrant galleries and street art"},
-          {t:"culture", text:"Colorful markets and ancient alleys"}
-        ] },
-      { q: "Finally — what would make you happiest after a trip?", a: [
-          {t:"beach", text:"Sunset + a hammock"},
-          {t:"nature", text:"A summit and a clear view"},
-          {t:"art", text:"A favorite artwork to remember it by"},
-          {t:"culture", text:"Stories and memories from locals"}
-        ] }
-    ];
-
-    // Update path: images are inside destination-quiz.html/images/
-    const bgImages = [
-      "destination-quiz.html/images/1.jpg","destination-quiz.html/images/2.jpg","destination-quiz.html/images/3.jpg","destination-quiz.html/images/4.jpg","destination-quiz.html/images/5.jpg",
-      "destination-quiz.html/images/6.jpg","destination-quiz.html/images/7.jpg","destination-quiz.html/images/8.jpg","destination-quiz.html/images/9.jpg","destination-quiz.html/images/10.jpg",
-      "destination-quiz.html/images/11.jpg","destination-quiz.html/images/12.jpg","destination-quiz.html/images/13.jpg","destination-quiz.html/images/14.jpg","destination-quiz.html/images/15.jpg"
-    ];
-
-    const destinationByType = {
-      beach:   { title: "Bali, Indonesia", desc: "Sun-kissed beaches, rice terraces, island chill and surf culture." },
-      art:     { title: "Paris, France", desc: "Timeless museums, galleries, and a creative cafe scene." },
-      nature:  { title: "Banff, Canada", desc: "Alpine lakes, dramatic peaks and peaceful wilderness." },
-      culture: { title: "Kyoto, Japan", desc: "Ancient temples, tea houses, and timeless cultural charm." }
-    };
-
-    let current = 0;
-    const scores = { beach:0, art:0, nature:0, culture:0 };
-
-    const bg = document.getElementById("bg");
-    const qnum = document.getElementById("qnum");
-    const qtext = document.getElementById("questionText");
-    const answersWrap = document.getElementById("answers");
-    const resultArea = document.getElementById("resultArea");
-    const resultTitle = document.getElementById("resultTitle");
-    const resultDesc = document.getElementById("resultDesc");
-    const restartBtn = document.getElementById("restartBtn");
-    const shareBtn = document.getElementById("shareBtn");
-
-    function preloadAll() {
-      bgImages.forEach(src => { const i=new Image(); i.src=src; });
-    }
-    preloadAll();
-
-    function renderQuestion() {
-      const item = quiz[current];
-      qnum.textContent = (current + 1) + ".";
-      qtext.textContent = item.q;
-      answersWrap.innerHTML = "";
-      const imgUrl = bgImages[current] || "";
-      if (imgUrl) bg.style.backgroundImage = `url('${imgUrl}')`;
-      item.a.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.textContent = opt.text;
-        btn.type = "button";
-        btn.onclick = () => choose(opt.t);
-        answersWrap.appendChild(btn);
-      });
-      resultArea.style.display = "none";
-      resultArea.setAttribute("aria-hidden","true");
-    }
-
-    function choose(type) {
-      if(scores[type] !== undefined) scores[type]++;
-      current++;
-      if(current < quiz.length) {
-        renderQuestion();
-      } else {
-        showResult();
-      }
-    }
-
-    function showResult() {
-      const keys = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
-      const top = keys[0];
-      const dest = destinationByType[top] || { title: "a wonderful place", desc: "" };
-      qnum.textContent = "";
-      qtext.textContent = "Your recommended destination is:";
-      resultTitle.innerHTML = `<strong>${dest.title}</strong>`;
-      resultDesc.textContent = dest.desc;
-      resultArea.style.display = "block";
-      resultArea.setAttribute("aria-hidden","false");
-      answersWrap.innerHTML = `<div style="font-weight:700;font-size:18px;margin-top:8px;color:#123">${dest.title}</div>`;
-    }
-
-    restartBtn.addEventListener("click", () => {
-      current = 0;
-      for(const k in scores) scores[k] = 0;
-      renderQuestion();
-    });
-
-    shareBtn.addEventListener("click", () => {
-      const keys = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
-      const top = keys[0];
-      const dest = destinationByType[top] ? destinationByType[top].title : "a lovely destination";
-      const text = `I took the quiz and my recommended destination is ${dest}! Try it: ${location.href}`;
-      if(navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          shareBtn.textContent = "Copied!";
-          setTimeout(()=> shareBtn.textContent = "Copy result", 1400);
-        }).catch(()=> alert(text));
-      } else {
-        prompt("Copy your result:", text);
-      }
-    });
-
-    renderQuestion();
-  </script>
-</body>
-</html>
