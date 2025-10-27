@@ -1,3 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where in the World? Quiz</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    background: #000;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+  .bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.45);
+    z-index: -1;
+    transition: background-image 1s ease-in-out;
+  }
+  .quiz-container {
+    max-width: 600px;
+    margin: 60px auto;
+    background: rgba(0,0,0,0.45);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }
+  .qnum {
+    font-size: 22px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+  }
+  .qimage {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin: 15px 0;
+  }
+  .question {
+    font-size: 20px;
+    margin: 15px 0;
+  }
+  .answers button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+  .answers button:hover {
+    background: #f3f3f3;
+    transform: scale(1.02);
+  }
+  .controls {
+    margin-top: 15px;
+  }
+  .btn {
+    background: #fff;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 15px;
+  }
+  .ghost {
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+  }
+  .result-area {
+    display: none;
+  }
+  h2 { font-size: 26px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div id="bg" class="bg"></div>
+
+<div class="quiz-container">
+  <div class="question-area">
+    <div id="qnum" class="qnum"></div>
+    <img id="qImage" class="qimage" src="" alt="">
+    <div id="questionText" class="question"></div>
+    <div id="answers" class="answers"></div>
+  </div>
+
+  <div id="resultArea" class="result-area">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDesc"></p>
+    <button id="restartBtn" class="btn">Restart</button>
+    <button id="shareBtn" class="btn ghost">Share Result</button>
+  </div>
+</div>
+
 <script>
   const quiz = [
     { q: "What kind of weather makes you happiest?", a: [
@@ -97,7 +208,7 @@
     qnum.textContent = `${currentQuestion + 1}.`;
     questionText.textContent = q.q;
 
-    // ✅ Automatically load each image based on question number
+    // Load image for each question (1.jpg, 2.jpg, etc.)
     const imgPath = `images/${currentQuestion + 1}.jpg`;
     qImage.src = imgPath;
     bg.style.backgroundImage = `url('${imgPath}')`;
@@ -110,7 +221,6 @@
       answersDiv.appendChild(btn);
     });
 
-    // Hide "Previous" button on first question
     prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
   }
 
@@ -143,8 +253,6 @@
     resultArea.style.display = "block";
     resultTitle.textContent = title;
     resultDesc.textContent = desc;
-
-    // ✅ Each result uses its themed background image
     bg.style.backgroundImage = `url('images/${topType}.jpg')`;
   }
 
@@ -170,3 +278,5 @@
 
   showQuestion();
 </script>
+</body>
+</html>
