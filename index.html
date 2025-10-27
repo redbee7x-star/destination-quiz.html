@@ -1,257 +1,301 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Where Should You Travel Next?</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Destination Quiz — Find Your Next Trip</title>
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      overflow: hidden;
+    :root{
+      --card-bg: rgba(255,255,255,0.95);
+      --accent: #d7b96f;
+      --text: #123;
     }
-
-    /* background image styling */
-    #bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: brightness(0.5);
-      z-index: -1;
-      transition: background-image 0.8s ease-in-out;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f4f7fb;color:var(--text)}
+    /* full-screen background image */
+    #bg{
+      position:fixed;inset:0;background-size:cover;background-position:center;filter:brightness(0.56) saturate(1.02);z-index:-1;transition:background-image .6s ease-in-out;
     }
-
-    .quiz-container {
-      background: rgba(0, 0, 0, 0.55);
-      padding: 2rem;
-      border-radius: 20px;
-      max-width: 600px;
-      text-align: center;
-      backdrop-filter: blur(5px);
+    /* center content */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .card{
+      width:100%;max-width:820px;border-radius:14px;background:var(--card-bg);box-shadow:0 14px 40px rgba(12,24,40,0.12);padding:26px;
     }
-
-    .question {
-      font-size: 1.3rem;
-      margin-bottom: 1.5rem;
+    header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#ffd47a,#f0a500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    h1{font-size:18px;margin:0}
+    .subtitle{color:#6b7280;font-size:13px;margin-top:6px}
+    /* question area */
+    .question-area{margin-top:18px}
+    .qnum{font-weight:700;color:#334;display:block;margin-bottom:6px}
+    .question{font-size:18px;margin-bottom:14px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .answers button{
+      padding:12px;border-radius:10px;border:1px solid rgba(17,24,39,0.06);background:#fff;cursor:pointer;font-size:15px;text-align:left;box-shadow:0 6px 16px rgba(12,24,40,0.04);
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
     }
-
-    .answers button {
-      display: block;
-      width: 100%;
-      margin: 0.6rem 0;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 12px;
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .answers button:hover {
-      background-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .result {
-      font-size: 1.5rem;
-      color: #ffe066;
-      margin-top: 1rem;
+    .answers button:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(12,24,40,0.08)}
+    .answers button:active{transform:translateY(-1px)}
+    .result-area{display:none;padding:18px;margin-top:14px;border-radius:10px;background:linear-gradient(180deg,#fffef8,#fffaf2);text-align:center}
+    .result-title{font-weight:800;font-size:20px;margin-bottom:8px}
+    .result-desc{color:#334;margin-bottom:12px}
+    .controls{display:flex;gap:8px;justify-content:center;margin-top:12px}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#123;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(17,24,39,0.06)}
+    /* responsive */
+    @media (max-width:720px){
+      .answers{grid-template-columns:1fr}
+      .card{padding:18px}
+      .question{font-size:16px}
     }
   </style>
 </head>
 <body>
-  <div id="bg"></div>
+  <div id="bg" role="img" aria-hidden="true"></div>
 
-  <div class="quiz-container">
-    <h2>Not sure where to go next? 🌍</h2>
-    <p>Let your taste, mood, or spirit animal decide! Take our fun quiz and uncover your next dreamy destination.</p>
-    <div id="quiz">
-      <div id="question" class="question"></div>
-      <div id="answers" class="answers"></div>
+  <div class="wrap">
+    <div class="card" role="application" aria-label="Destination quiz">
+      <header>
+        <div class="logo">W✈️</div>
+        <div>
+          <h1>Not sure where to go next?</h1>
+          <div class="subtitle">Let your taste, mood, or spirit animal decide — 15 quick questions.</div>
+        </div>
+      </header>
+
+      <main class="question-area" aria-live="polite">
+        <div class="qnum" id="qnum">1.</div>
+        <div class="question" id="questionText">Loading question…</div>
+
+        <div class="answers" id="answers" role="list"></div>
+
+        <div class="result-area" id="resultArea" aria-hidden="true">
+          <div class="result-title" id="resultTitle"></div>
+          <div class="result-desc" id="resultDesc"></div>
+          <div class="controls">
+            <button class="btn" id="restartBtn">Restart Quiz</button>
+            <button class="btn ghost" id="shareBtn">Copy result</button>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 
   <script>
-    const quizData = [
-      { question: "1️⃣ What’s your travel vibe today?",
-        answers: [
-          { text: "Relaxing by the beach", type: "beach" },
-          { text: "Exploring ancient ruins", type: "culture" },
-          { text: "Food adventure!", type: "food" },
-          { text: "Nature and mountains", type: "mountain" }
+    // 15 questions (numeric numbering will be applied automatically)
+    const quiz = [
+      { q: "What kind of weather makes you happiest?", a: [
+          {t:"beach", text:"Warm sunshine and sea breeze"},
+          {t:"art",  text:"Crisp air and artistic city corners"},
+          {t:"nature",text:"Cool mountain air"},
+          {t:"culture",text:"Mild weather perfect for walking museums"}
         ]
       },
-      { question: "2️⃣ Your ideal morning on vacation?",
-        answers: [
-          { text: "Watching sunrise with coffee", type: "mountain" },
-          { text: "Breakfast buffet near the sea", type: "beach" },
-          { text: "Exploring a local market", type: "culture" },
-          { text: "Trying street food early!", type: "food" }
+      { q: "Your ideal morning on vacation:", a: [
+          {t:"nature", text:"Sunrise hike with coffee"},
+          {t:"beach",  text:"Breakfast by the water"},
+          {t:"culture", text:"Wandering a local market"},
+          {t:"art", text:"Espresso at a gallery café"}
         ]
       },
-      { question: "3️⃣ Pick your travel soundtrack:",
-        answers: [
-          { text: "Soft waves and ukulele tunes", type: "beach" },
-          { text: "Energetic city beats", type: "city" },
-          { text: "Traditional drums or flutes", type: "culture" },
-          { text: "Calm instrumental nature sounds", type: "mountain" }
+      { q: "Pick a travel soundtrack:", a: [
+          {t:"beach", text:"Gentle acoustic & waves"},
+          {t:"art",  text:"Indie jazz and piano"},
+          {t:"culture", text:"Traditional melodies"},
+          {t:"nature", text:"Ambient nature sounds"}
         ]
       },
-      { question: "4️⃣ How do you take your vacation photos?",
-        answers: [
-          { text: "With my feet in the sand", type: "beach" },
-          { text: "Next to a cool building", type: "city" },
-          { text: "With local people and food", type: "food" },
-          { text: "On a hiking trail", type: "mountain" }
+      { q: "What’s the first thing you pack?", a: [
+          {t:"beach", text:"Swimwear & sunscreen"},
+          {t:"art", text:"Notebook and sketch pen"},
+          {t:"nature", text:"Hiking boots"},
+          {t:"culture", text:"Camera and a notebook"}
         ]
       },
-      { question: "5️⃣ Which travel scent do you love most?",
-        answers: [
-          { text: "Coconut sunscreen", type: "beach" },
-          { text: "Spices and street food", type: "food" },
-          { text: "Fresh pine forest air", type: "mountain" },
-          { text: "Old books and coffee shops", type: "culture" }
+      { q: "How do you like to spend an evening?", a: [
+          {t:"culture", text:"Watching a local performance"},
+          {t:"art", text:"Exploring galleries and small shows"},
+          {t:"beach", text:"Bonfire & stars"},
+          {t:"nature", text:"Stargazing by a quiet lake"}
         ]
       },
-      { question: "6️⃣ What’s your favorite travel companion?",
-        answers: [
-          { text: "My best friend", type: "city" },
-          { text: "My partner", type: "beach" },
-          { text: "Solo — just me!", type: "mountain" },
-          { text: "My family", type: "culture" }
+      { q: "Pick a perfect photo for your feed:", a: [
+          {t:"beach", text:"Turquoise water and palm trees"},
+          {t:"art", text:"Colourful street murals"},
+          {t:"culture", text:"Historic alley with lanterns"},
+          {t:"nature", text:"Foggy mountain ridge"}
         ]
       },
-      { question: "7️⃣ Choose your dream activity:",
-        answers: [
-          { text: "Snorkeling or surfing", type: "beach" },
-          { text: "Climbing or camping", type: "mountain" },
-          { text: "Museum or art walk", type: "culture" },
-          { text: "Cooking class", type: "food" }
+      { q: "Your favorite travel snack is:", a: [
+          {t:"culture", text:"Handmade pastry from a market"},
+          {t:"beach", text:"Fresh tropical fruit"},
+          {t:"art", text:"A specialty café dessert"},
+          {t:"nature", text:"Trail mix and hot cocoa"}
         ]
       },
-      { question: "8️⃣ What’s your go-to travel snack?",
-        answers: [
-          { text: "Tropical fruits", type: "beach" },
-          { text: "Granola and trail mix", type: "mountain" },
-          { text: "Pastries or bread", type: "food" },
-          { text: "Local sweets or snacks", type: "culture" }
+      { q: "Pick your spirit animal for the trip:", a: [
+          {t:"beach", text:"Dolphin"},
+          {t:"nature", text:"Eagle"},
+          {t:"art", text:"Swan"},
+          {t:"culture", text:"Owl"}
         ]
       },
-      { question: "9️⃣ Your favorite type of accommodation?",
-        answers: [
-          { text: "Beach bungalow", type: "beach" },
-          { text: "Cozy cabin", type: "mountain" },
-          { text: "Luxury city hotel", type: "city" },
-          { text: "Charming local guesthouse", type: "culture" }
+      { q: "What kind of souvenir do you bring home?", a: [
+          {t:"culture", text:"Local handmade craft"},
+          {t:"beach", text:"Seashell keepsake"},
+          {t:"art", text:"Limited-print poster or zine"},
+          {t:"nature", text:"Landscape photo book"}
         ]
       },
-      { question: "🔟 What’s your dream weather?",
-        answers: [
-          { text: "Sunny and warm", type: "beach" },
-          { text: "Cool and breezy", type: "mountain" },
-          { text: "Mild with cultural vibes", type: "culture" },
-          { text: "Varied — I love surprises", type: "city" }
+      { q: "Which scent makes you nostalgic while traveling?", a: [
+          {t:"art", text:"Coffee & paint studio scent"},
+          {t:"beach", text:"Salt air"},
+          {t:"culture", text:"Spices and incense"},
+          {t:"nature", text:"Pine and wet earth"}
         ]
       },
-      { question: "11️⃣ Your favorite travel souvenir?",
-        answers: [
-          { text: "Shells or sand in a bottle", type: "beach" },
-          { text: "Handmade crafts", type: "culture" },
-          { text: "Spices or snacks", type: "food" },
-          { text: "Photos from the top view", type: "mountain" }
+      { q: "Your favorite season is:", a: [
+          {t:"beach", text:"Summer"},
+          {t:"nature", text:"Spring"},
+          {t:"culture", text:"Autumn"},
+          {t:"art", text:"Winter (cozy galleries & cafes)"}
         ]
       },
-      { question: "12️⃣ Pick your travel motto:",
-        answers: [
-          { text: "Go where the sun shines", type: "beach" },
-          { text: "Climb mountains, not excuses", type: "mountain" },
-          { text: "Eat first, plan later", type: "food" },
-          { text: "Wander often, wonder always", type: "culture" }
+      { q: "How do you prefer to move around?", a: [
+          {t:"art", text:"Bike between studios and cafés"},
+          {t:"beach", text:"Bike or scooter along the shore"},
+          {t:"nature", text:"Hiking or kayaking"},
+          {t:"culture", text:"Leisurely strolling and exploring"}
         ]
       },
-      { question: "13️⃣ Your spirit animal on vacation is...",
-        answers: [
-          { text: "A dolphin 🐬", type: "beach" },
-          { text: "An eagle 🦅", type: "mountain" },
-          { text: "A panda 🐼", type: "food" },
-          { text: "A cat 🐈", type: "city" }
+      { q: "Pick one word to describe your perfect trip:", a: [
+          {t:"beach", text:"Relaxing"},
+          {t:"art", text:"Inspired"},
+          {t:"nature", text:"Peaceful"},
+          {t:"culture", text:"Enriching"}
         ]
       },
-      { question: "14️⃣ When you daydream about traveling, what do you imagine most?",
-        answers: [
-          { text: "Relaxing by turquoise water and palm trees", type: "beach" },
-          { text: "Breathing fresh air high in the mountains", type: "mountain" },
-          { text: "Exploring buzzing streets full of lights and cafés", type: "city" },
-          { text: "Wandering through ancient alleys and colorful markets", type: "culture" }
+      // question 14 (non-country phrasing)
+      { q: "When you daydream about traveling, what do you imagine most?", a: [
+          {t:"beach", text:"Turquoise water and swaying palms"},
+          {t:"nature", text:"Mountain air and wide views"},
+          {t:"art", text:"Vibrant galleries and street art"},
+          {t:"culture", text:"Colorful markets and ancient alleys"}
         ]
       },
-      { question: "15️⃣ Finally — what would make you the happiest?",
-        answers: [
-          { text: "Hammock + ocean breeze", type: "beach" },
-          { text: "Reaching a summit", type: "mountain" },
-          { text: "Tasting something new", type: "food" },
-          { text: "Finding a hidden gem in a new town", type: "culture" }
+      { q: "Finally — what would make you happiest after a trip?", a: [
+          {t:"beach", text:"Sunset + a hammock"},
+          {t:"nature", text:"A summit and a clear view"},
+          {t:"art", text:"A favorite artwork to remember it by"},
+          {t:"culture", text:"Stories and memories from locals"}
         ]
       }
     ];
 
+    // local images folder: images/q1.jpg ... images/q15.jpg
     const bgImages = [
-      "images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg",
-      "images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/10.jpg",
-      "images/11.jpg","images/12.jpg","images/13.jpg","images/14.jpg","images/15.jpg"
+      "images/q1.jpg","images/q2.jpg","images/q3.jpg","images/q4.jpg","images/q5.jpg",
+      "images/q6.jpg","images/q7.jpg","images/q8.jpg","images/q9.jpg","images/q10.jpg",
+      "images/q11.jpg","images/q12.jpg","images/q13.jpg","images/q14.jpg","images/q15.jpg"
     ];
 
-    const bg = document.getElementById("bg");
-    const questionEl = document.getElementById("question");
-    const answersEl = document.getElementById("answers");
-    let currentQuestion = 0;
-    const scores = { beach: 0, mountain: 0, food: 0, culture: 0, city: 0 };
+    // Map dominant type to a recommended city/place (updated: Art -> Paris)
+    const destinationByType = {
+      beach:   { title: "Bali, Indonesia", desc: "Sun-kissed beaches, rice terraces, island chill and surf culture." },
+      art:     { title: "Paris, France", desc: "Timeless museums, galleries, and a creative cafe scene." },
+      nature:  { title: "Banff, Canada", desc: "Alpine lakes, dramatic peaks and peaceful wilderness." },
+      culture: { title: "Kyoto, Japan", desc: "Ancient temples, tea houses, and timeless cultural charm." }
+    };
 
-    function loadQuestion() {
-      const q = quizData[currentQuestion];
-      bg.style.backgroundImage = `url('${bgImages[currentQuestion]}')`;
-      questionEl.textContent = q.question;
-      answersEl.innerHTML = "";
-      q.answers.forEach((a) => {
+    // state
+    let current = 0;
+    const scores = { beach:0, art:0, nature:0, culture:0 };
+
+    // DOM refs
+    const bg = document.getElementById("bg");
+    const qnum = document.getElementById("qnum");
+    const qtext = document.getElementById("questionText");
+    const answersWrap = document.getElementById("answers");
+    const resultArea = document.getElementById("resultArea");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultDesc = document.getElementById("resultDesc");
+    const restartBtn = document.getElementById("restartBtn");
+    const shareBtn = document.getElementById("shareBtn");
+
+    // preload images to smooth transitions
+    function preloadAll() {
+      bgImages.forEach(src => { const i=new Image(); i.src=src; });
+    }
+    preloadAll();
+
+    function renderQuestion() {
+      const item = quiz[current];
+      qnum.textContent = (current + 1) + ".";
+      qtext.textContent = item.q;
+      answersWrap.innerHTML = "";
+      // update background image (if available)
+      const imgUrl = bgImages[current] || "";
+      if(imgUrl) bg.style.backgroundImage = `url('${imgUrl}')`;
+      // render answers
+      item.a.forEach(opt => {
         const btn = document.createElement("button");
-        btn.textContent = a.text;
-        btn.onclick = () => handleAnswer(a);
-        answersEl.appendChild(btn);
+        btn.textContent = opt.text;
+        btn.type = "button";
+        btn.onclick = () => choose(opt.t);
+        answersWrap.appendChild(btn);
       });
+      // hide result area while answering
+      resultArea.style.display = "none";
+      resultArea.setAttribute("aria-hidden","true");
     }
 
-    function handleAnswer(answer) {
-      scores[answer.type]++;
-      currentQuestion++;
-      if (currentQuestion < quizData.length) loadQuestion();
-      else showResult();
+    function choose(type) {
+      if(scores[type] !== undefined) scores[type]++;
+      current++;
+      if(current < quiz.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
     }
 
     function showResult() {
-      const topType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-      let destination = "";
-      switch (topType) {
-        case "beach": destination = "a tropical beach paradise 🏝️"; break;
-        case "mountain": destination = "a peaceful mountain escape 🏔️"; break;
-        case "food": destination = "a food lover’s dream city 🍜"; break;
-        case "culture": destination = "a place full of culture and history 🎭"; break;
-        case "city": destination = "a vibrant and exciting city 🌆"; break;
-      }
-      questionEl.textContent = "Your dreamy destination is...";
-      answersEl.innerHTML = `<div class="result">${destination}</div>`;
+      // determine top type (if tie, picks the one with highest order after sorting by score)
+      const keys = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
+      const top = keys[0];
+      const dest = destinationByType[top] || { title: "a wonderful place", desc: "" };
+      qnum.textContent = "";
+      qtext.textContent = "Your recommended destination is:";
+      resultTitle.innerHTML = `<strong>${dest.title}</strong>`;
+      resultDesc.textContent = dest.desc;
+      resultArea.style.display = "block";
+      resultArea.setAttribute("aria-hidden","false");
+      answersWrap.innerHTML = `<div style="font-weight:700;font-size:18px;margin-top:8px;color:#123">${dest.title}</div>`;
     }
 
-    loadQuestion();
+    restartBtn.addEventListener("click", () => {
+      current = 0;
+      for(const k in scores) scores[k] = 0;
+      renderQuestion();
+    });
+
+    shareBtn.addEventListener("click", () => {
+      const keys = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
+      const top = keys[0];
+      const dest = destinationByType[top] ? destinationByType[top].title : "a lovely destination";
+      const text = `I took the quiz and my recommended destination is ${dest}! Try it: ${location.href}`;
+      if(navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          shareBtn.textContent = "Copied!";
+          setTimeout(()=> shareBtn.textContent = "Copy result", 1400);
+        }).catch(()=> alert(text));
+      } else {
+        prompt("Copy your result:", text);
+      }
+    });
+
+    // initial render
+    renderQuestion();
   </script>
 </body>
 </html>
