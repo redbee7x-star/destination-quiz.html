@@ -242,14 +242,21 @@ function selectAnswer(type) {
 function showResult() {
   const topType = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
   const results = {
-    beach: ["Bali, Indonesia", "Golden beaches, lush temples, and warm smiles await you in Bali — your perfect tropical escape."],
-    art: ["Paris, France", "Where every corner inspires: stroll through art museums, sip coffee in hidden alleys, and let creativity flow."],
-    culture: ["Kyoto, Japan", "Step into ancient streets, serene shrines, and traditions that blend past and present in perfect harmony."],
-    nature: ["New Zealand", "For the soul that seeks vast horizons — snow peaks, green valleys, and adventure around every bend."]
+    beach: ["Bali, Indonesia", "You’re drawn to golden sands, turquoise waves, and island serenity."],
+    art: ["Paris, France", "A city of lights and creativity — perfect for your artistic soul."],
+    culture: ["Kyoto, Japan", "Tradition meets tranquility in this timeless cultural haven."],
+    nature: ["New Zealand", "Breathtaking landscapes await your adventurous, nature-loving spirit."]
   };
-  const [title, desc] = results[topType];
-  resultImage.src = `images/${topType}.jpg`;
 
+  const [title, desc] = results[topType];
+  const imageFile = {
+    beach: "bali",
+    art: "paris",
+    culture: "kyoto",
+    nature: "newzealand"
+  }[topType];
+
+  resultImage.src = `images/${imageFile}.jpg`;
   document.querySelector(".question-area").style.display = "none";
   resultArea.style.display = "block";
   resultTitle.textContent = title;
